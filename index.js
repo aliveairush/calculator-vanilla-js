@@ -16,8 +16,11 @@ const EQUATION = '='
 const NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const OPERATORS = [PLUS, MINUS, MULTIPLICATION, DIVISION];
 
-
 let mathExpressionString = '';
+const operatorStack = [];
+const operationStack = [];
+
+const peek = (stack) => stack[stack.length - 1];
 
 const doesPrevNumberHavePeriod = () => /\d+\.\d+$/g.test(mathExpressionString);
 
@@ -31,9 +34,7 @@ const deleteLastCharFromMathExpression = () => {
   calculatorOutput.textContent = mathExpressionString;
 }
 
-const clearMathExpression = () => {
-  calculatorOutput.textContent = mathExpressionString = '';
-}
+const clearMathExpression = () => calculatorOutput.textContent = mathExpressionString = '';
 
 const prevCharacter = () => mathExpressionString.charAt(mathExpressionString.length - 1) || '';
 
@@ -49,8 +50,7 @@ const handleClickGeneral = function (char) {
 const DIGIT_OBJ = {
   value: NUMBERS,
   possiblePrevValues: [EMPTY_STRING, ...NUMBERS, ...OPERATORS, PERIOD, LEFT_BRACKET],
-  // TODO если первый символ 0, то второй ноль нельзя вводить
-  handleClick: handleClickGeneral,
+  handleClick: handleClickGeneral,  // TODO если первый символ 0, то второй ноль нельзя вводить
 };
 
 const OPERATOR_OBJ = {
@@ -80,32 +80,132 @@ const RIGHT_BRACKET_OBJ = {
   handleClick: handleClickGeneral,   // TODO доделать проверки: Что до этого шло выражение и что до этого была левая скобка
 }
 
-const operatorStack = [];
-const operationStack = [];
+const handleOperationRecord = function () {
+  if (operationStack.length === 0) {
+    operationStack.push(this.value);
+    return
+  }
+  let prevOperation = map.get(peek(operationStack));
 
-const isANumber = (number) => /\d+\.\d+|\d+/g.test(number);
+  while (prevOperation && this.level <= prevOperation.level) {
+    const secondOperand = operatorStack.pop();
+    const firstOperand = operatorStack.pop();
 
-const calcButtons = {
-  [CLEAR]: clearMathExpression,
-  [BACKSPACE]: deleteLastCharFromMathExpression,
-  [LEFT_BRACKET]: LEFT_BRACKET_OBJ.handleClick.bind(LEFT_BRACKET_OBJ),
-  [RIGHT_BRACKET]: RIGHT_BRACKET_OBJ.handleClick.bind(RIGHT_BRACKET_OBJ),
-  [PERIOD]: PERIOD_OBJ.handleClick.bind(PERIOD_OBJ),
-  [EQUATION]: () => {
-    // MAIN LOGIC
+    const result = prevOperation.mathFunction(+firstOperand, +secondOperand);
 
-
-  },
+    operatorStack.push(result);
+    operationStack.pop();
+    prevOperation = map.get(peek(operationStack));
+  }
+  operationStack.push(this.value);
 }
 
-// Append all digits(operands) to execute object
-DIGIT_OBJ.value.forEach(digit => calcButtons[digit] = DIGIT_OBJ.handleClick.bind(DIGIT_OBJ));
-// Append all operators to execute object
-OPERATOR_OBJ.value.forEach(operator => calcButtons[operator] = OPERATOR_OBJ.handleClick.bind(OPERATOR_OBJ));
+const map = new Map(Object.entries({
+  [CLEAR]: {
+    handleClick: clearMathExpression
+  },
+  [BACKSPACE]: {
+    handleClick: deleteLastCharFromMathExpression
+  },
+  [LEFT_BRACKET]: {
+    value: LEFT_BRACKET,
+    level: 0,
+    handleClick: LEFT_BRACKET_OBJ.handleClick.bind(LEFT_BRACKET_OBJ),
+    handleExecution: () => operationStack.push(LEFT_BRACKET)
+  },
+  [RIGHT_BRACKET]: {
+    value: RIGHT_BRACKET,
+    handleClick: RIGHT_BRACKET_OBJ.handleClick.bind(RIGHT_BRACKET_OBJ),
+    handleExecution: ()=> {
+      let prevOperation = map.get(peek(operationStack));
 
+      while (prevOperation.value !== LEFT_BRACKET) {
+        const secondOperand = operatorStack.pop();
+        const firstOperand = operatorStack.pop();
+
+        const result = prevOperation.mathFunction(+firstOperand, +secondOperand);
+
+        operatorStack.push(result);
+        operationStack.pop();
+        prevOperation = map.get(operationStack.pop());
+      }
+    }
+  },
+  [PERIOD]: {
+    value: PERIOD,
+    handleClick: PERIOD_OBJ.handleClick.bind(PERIOD_OBJ)
+  },
+  [PLUS]: {
+    value: PLUS,
+    level: 1,
+    handleClick: OPERATOR_OBJ.handleClick.bind(OPERATOR_OBJ),
+    mathFunction: (a, b) => {
+      console.log(`Math operation ${a} + ${b};`)
+      return a + b;
+    },
+    handleExecution: handleOperationRecord,
+  },
+  [MINUS]: {
+    value: MINUS,
+    level: 1,
+    handleClick: OPERATOR_OBJ.handleClick.bind(OPERATOR_OBJ),
+    mathFunction: (a, b) => {
+      console.log(`Math operation ${a} - ${b};`)
+      return a - b;
+    },
+    handleExecution: handleOperationRecord,
+  },
+  [MULTIPLICATION]: {
+    value: MULTIPLICATION,
+    level: 2,
+    handleClick: OPERATOR_OBJ.handleClick.bind(OPERATOR_OBJ),
+    mathFunction: (a, b) => {
+      console.log(`Math operation ${a} * ${b};`)
+      return a * b;
+    },
+    handleExecution: handleOperationRecord,
+  },
+  [DIVISION]: {
+    value: DIVISION,
+    level: 2,
+    handleClick: OPERATOR_OBJ.handleClick.bind(OPERATOR_OBJ),
+    mathFunction: (a, b) => {
+      console.log(`Math operation ${a} / ${b};`)
+      return a / b;
+    },
+    handleExecution: handleOperationRecord,
+  },
+  [EQUATION]: {
+    handleClick: () => {
+      const mockExpression = '1+2*(3+4/2-(1+2))*2+1'
+      const mathRecord = mathExpressionString.match(/[()+-/*//]|\d+\.\d+|\d+/g);
+      console.log("Records", mathRecord)
+      for (const record of mathRecord) {
+        console.log("Record", record);
+        map.get(record).handleExecution();
+      }
+
+      // Довыполнить оставшиеся операции
+      while (operationStack.length > 0) {
+        const bOperand = operatorStack.pop();
+        const aOperand = operatorStack.pop();
+        const currentOperation = operationStack.pop()
+
+        const result = map.get(currentOperation).mathFunction(+aOperand, +bOperand);
+        operatorStack.push(result);
+      }
+      console.log("RESULT", operatorStack.pop())
+    }
+  },
+}));
+
+DIGIT_OBJ.value.forEach(digit => map.set(digit, {
+  handleClick: handleClickGeneral.bind(DIGIT_OBJ),
+  handleExecution: () => operatorStack.push(digit)
+}));
 
 calculator.addEventListener('click', (e) => {
   const inputChar = e.target.dataset.content;
-  if (inputChar) calcButtons[inputChar](inputChar);
+  if (inputChar) map.get(inputChar).handleClick(inputChar);
 });
 
