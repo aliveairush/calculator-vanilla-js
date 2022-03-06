@@ -1,4 +1,4 @@
 import Calculator from "./calculator.mjs";
 
-new Calculator();
+new Calculator(document.body);
 
