@@ -32,10 +32,9 @@ export default class Calculator {
       throw new Error("Container cannot be null or undefined")
     }
 
-    this.#renderCalcHtml(container);
+    this.#calculatorHtmlElem = this.#renderCalcHtml(container);
 
     this.#inputString = DIGITS[0];
-    this.#calculatorHtmlElem = container.querySelector('.calculator');
     this.#inputTextHtmlElem = this.#calculatorHtmlElem.querySelector(".calc__item-input");
     this.#outputTextHtmlElem = this.#calculatorHtmlElem.querySelector(".calc__item-output");
     this.#operationStack = [];
@@ -246,7 +245,10 @@ export default class Calculator {
   }
 
   #renderCalcHtml = (container) => {
-    container.insertAdjacentHTML("beforeend", `<div class="calculator">
+    const calc = document.createElement('div');
+    calc.className = 'calculator';
+
+    calc.innerHTML = `
   <div class="calc__item calc__item-header">
     <div class="calc__item-output"></div>
     <div class="calc__item-input">0</div>
@@ -270,7 +272,9 @@ export default class Calculator {
   <div class="calc__item " data-content="/"></div>
   <div class="calc__item " data-content="."></div>
   <div class="calc__item calc__item_dark" data-content="0"></div>
-  <div class="calc__item calc__item_light-blue" data-content="="></div>
-</div>`)
+  <div class="calc__item calc__item_light-blue" data-content="="></div>`;
+
+    container.append(calc);
+    return calc;
   }
 }
