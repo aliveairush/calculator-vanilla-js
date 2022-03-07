@@ -59,7 +59,21 @@ export default class Calculator {
     const clearHistory = this.#calculatorHtmlElem.querySelector(".calc__btn-item-output-clear");
     clearHistory.addEventListener('click', () => {
       this.#outputTextHtmlElem.innerHTML = '';
-    })
+    });
+
+    // Listener to type allow typing
+    document.addEventListener("keydown", (e) => {
+      try {
+        // If pressed button value exist in buttons call btn object handleClick
+        const pressedBtn = this.#calcButtons.get(e.key);
+        if (pressedBtn !== undefined) pressedBtn.handleClick(pressedBtn);
+
+        if (e.key === "Backspace") this.#calcButtons.get(BACKSPACE).handleClick();
+        if (e.key === "Enter") this.#calcButtons.get(EQUATION).handleClick();
+      } catch (error) {
+        console.warn(error.message);
+      }
+    });
   }
 
   /** Every calculator button object at least has handleClick() function, which is being executed when user clicks on corresponded calculator button
@@ -153,9 +167,10 @@ export default class Calculator {
               this.#displayMathResult(finalResult); // Display answer into output html element
               this.#updateMathExpression(finalResult); // Set new value input field value as the previous expression result
             } catch (error) {
-              if (error instanceof SyntaxError){
+              if (error instanceof SyntaxError) {
                 this.#displayMathResult(error.message);
-              } else {
+              }
+              else {
                 this.#displayMathResult("Error");
               }
             }
@@ -261,7 +276,7 @@ export default class Calculator {
    * Function displays math result in output dom element
    */
   #displayMathResult = (result) => {
-    this.#outputTextHtmlElem.insertAdjacentHTML("beforeend", `<span>${this.#inputString} = <strong>${result}</strong></span>`);
+    this.#outputTextHtmlElem.insertAdjacentHTML("beforeend", `<span>${this.#inputString}  =  <strong>${result}</strong></span>`);
 
     const calcHeaderHtml = this.#calculatorHtmlElem.querySelector('.calc__header');
     calcHeaderHtml.scrollTop = this.#outputTextHtmlElem.scrollHeight;
