@@ -65,6 +65,7 @@ body {
     justify-content: space-between;
     text-align: right;
     cursor: auto;
+    padding: 1rem 0 2rem 0;
 
     inline-size: 100%;
     overflow-wrap: break-word;
@@ -72,7 +73,7 @@ body {
 
     background: var(--bg-color-primary);
     color: var(--text-color-primary);
-
+    overflow-y: auto;
     height: 200px;
     font-size: 2rem;
 }
@@ -84,7 +85,7 @@ body {
 .calc__item-output {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+
     font-size: 0.70em;
     color: var(--text-color-secondary);
     padding: 0 2rem;
@@ -92,7 +93,7 @@ body {
 
 .calc__item-input {
     font-size: 1.5em;
-    padding: 0.5rem 2rem 1.5rem 2rem;
+    padding: 0.5rem 2rem 0 2rem;
 }
 
 .calc__item {
