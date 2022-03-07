@@ -36,7 +36,7 @@ export default class Calculator {
 
     this.#inputString = DIGITS[0]; // Input string value by default is '0'
     this.#inputTextHtmlElem = this.#calculatorHtmlElem.querySelector(".calc__item-input"); // DOM element where clicked button's values are displayed
-    this.#outputTextHtmlElem = this.#calculatorHtmlElem.querySelector(".calc__item-output"); // DOM element where math expression result is displayed
+    this.#outputTextHtmlElem = this.#calculatorHtmlElem.querySelector(".calc__item-output"); // History DOM element where math expression results are displayed
     this.#operationStack = []; // Stack of operations such as "=-*/(
     this.#numberStack = []; // Or in other words Operator stack
 
@@ -54,6 +54,12 @@ export default class Calculator {
         console.warn(error.message);
       }
     });
+
+    // When clear button click event, clear history
+    const clearHistory = this.#calculatorHtmlElem.querySelector(".calc__btn-item-output-clear");
+    clearHistory.addEventListener('click', () => {
+      this.#outputTextHtmlElem.innerHTML = '';
+    })
   }
 
   /** Every calculator button object at least has handleClick() function, which is being executed when user clicks on corresponded calculator button
@@ -284,6 +290,7 @@ export default class Calculator {
 
     calc.innerHTML = `
   <div class="calc__header">
+    <div class="calc__btn-item-output-clear">Clear</div>
     <div class="calc__item-output"></div>
     <div class="calc__item-input">0</div>
   </div>
