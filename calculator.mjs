@@ -127,7 +127,6 @@ export default class Calculator {
         [EQUATION]: {
           handleClick: () => {
             try {
-
               const mathChunks = splitOnMathChunks(this.#inputString); // Math chunks looks like ["2.2", "-", "4", "*", "2"]
 
               for (const chunk of mathChunks) {
@@ -148,7 +147,11 @@ export default class Calculator {
               this.#displayMathResult(finalResult); // Display answer into output html element
               this.#updateMathExpression(finalResult); // Set new value input field value as the previous expression result
             } catch (error) {
-              this.#displayMathResult('ERROR');
+              if (error instanceof SyntaxError){
+                this.#displayMathResult(error.message);
+              } else {
+                this.#displayMathResult("Error");
+              }
             }
           }
         },
@@ -201,6 +204,9 @@ export default class Calculator {
     const secondOperand = Number(this.#numberStack.pop());
     const firstOperand = Number(this.#numberStack.pop());
     const operationSymbol = this.#operationStack.pop();
+
+    // If we try divide on zero, throw an Error
+    if (operationSymbol === DIVISION && secondOperand === +DIGITS[0]) throw new SyntaxError("Division by zero is not possible")
 
     const mathFunc = this.#calcButtons.get(operationSymbol).mathFunction // Get needed math function by operation symbol
     const result = mathFunc(firstOperand, secondOperand); // Execute math function
