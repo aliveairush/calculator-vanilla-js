@@ -249,9 +249,8 @@ export default class Calculator {
    * Function displays math result in output dom element
    */
   #displayMathResult = (result) => {
-    this.#outputTextHtmlElem.insertAdjacentHTML("beforeend", `<span>${this.#inputString} = ${result}</span>`)
-    const calcHeaderHtml = this.#calculatorHtmlElem.querySelector('.calc__item-header');
-    calcHeaderHtml.scrollTop = this.#outputTextHtmlElem.offsetHeight;
+    this.#outputTextHtmlElem.insertAdjacentHTML("beforeend", `<span>${this.#inputString} = ${result}</span>`);
+    this.#outputTextHtmlElem.scrollTop = this.#outputTextHtmlElem.scrollHeight; // Scroll to bottom in output html element
   }
 
   /**
@@ -276,7 +275,7 @@ export default class Calculator {
     calc.className = 'calculator';
 
     calc.innerHTML = `
-  <div class="calc__item calc__item-header">
+  <div class="calc__header">
     <div class="calc__item-output"></div>
     <div class="calc__item-input">0</div>
   </div>

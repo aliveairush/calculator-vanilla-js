@@ -37,7 +37,6 @@ body {
 ::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 10px;
-
 }
 
 /* Handle on hover */
@@ -58,11 +57,10 @@ body {
     box-shadow: rgba(17, 17, 26, 0.1) 0 18px 24px, rgba(17, 17, 26, 0.1) 0 26px 56px, rgba(17, 17, 26, 0.1) 0 34px 80px;
 }
 
-.calc__item.calc__item-header {
+.calc__header {
     grid-column: 1/-1;
 
     display: flex;
-    gap: 1rem;
     flex-direction: column;
     justify-content: space-between;
     text-align: right;
@@ -72,28 +70,29 @@ body {
     overflow-wrap: break-word;
     user-select: auto;
 
-    padding-right: 1.5rem;
     background: var(--bg-color-primary);
     color: var(--text-color-primary);
 
-    height: 175px;
-    overflow-y: auto;
+    height: 200px;
+    font-size: 2rem;
 }
 
-.calc__item.calc__item-header:hover {
+.calc__header:hover {
     background: var(--bg-color-primary);
 }
 
 .calc__item-output {
     display: flex;
     flex-direction: column;
-
-    font-size: 0.5em;
+    overflow-y: auto;
+    font-size: 0.70em;
     color: var(--text-color-secondary);
+    padding: 0 2rem;
 }
 
 .calc__item-input {
     font-size: 1.5em;
+    padding: 0.5rem 2rem 1.5rem 2rem;
 }
 
 .calc__item {
