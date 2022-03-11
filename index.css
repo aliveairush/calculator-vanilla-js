@@ -73,6 +73,7 @@ body {
     user-select: auto;
 
     background: var(--bg-color-primary);
+    border-radius: 10px;
     color: var(--text-color-primary);
     overflow-y: auto;
     height: 200px;
