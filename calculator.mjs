@@ -167,11 +167,13 @@ export default class Calculator {
               this.#displayMathResult(finalResult); // Display answer into output html element
               this.#updateMathExpression(finalResult); // Set new value input field value as the previous expression result
             } catch (error) {
+              this.#operationStack = []; // Set to default
+              this.#numberStack = []; // Set to default
               if (error instanceof SyntaxError) {
                 this.#displayMathResult(error.message);
               }
               else {
-                this.#displayMathResult("Error");
+                this.#displayMathResult("Invalid math expression");
               }
             }
           }
