@@ -1,7 +1,7 @@
 // Helper functions
 export const peek = (stack) => stack[stack.length - 1];
 
-export const doesLastNumberContainPeriod = (string) => /\d+\.\d+/.test(string);
+export const doesLastNumberContainPeriod = (string) => /\d+\.\d+$/.test(string);
 
 export const isANumber = (record) => /\d+\.\d+|\d+/.test(record);
 
