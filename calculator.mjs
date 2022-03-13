@@ -14,7 +14,7 @@ import {
   RIGHT_BRACKET
 } from "./constants.mjs";
 
-import {doesLastNumberContainPeriod, isANumber, isEmpty, peek, splitOnMathChunks} from "./utils.mjs";
+import {doesLastNumberContainPeriod, isANumber, isEmpty, isLastNumberZero, peek, splitOnMathChunks} from "./utils.mjs";
 
 
 export default class Calculator {
@@ -185,11 +185,15 @@ export default class Calculator {
       value: digit,
       possiblePrevValues: [EMPTY_STRING, ...DIGITS, ...OPERATORS, PERIOD, LEFT_BRACKET],
       handleClick: () => {
-        // If input field value contains only 0, then on digit btn click it is better to get rid of 0
-        if (this.#inputString === DIGITS[0]) {
-          this.#inputString = EMPTY_STRING;
+        // If input string ends with number 0 and input btn is zero, then skip
+        if (isLastNumberZero(this.#inputString) && digit === DIGITS[0]) return
+
+        // If input string end with number 0 and input btn is NOT zero, then replace 0
+        if (isLastNumberZero(this.#inputString) && digit !== DIGITS[0]) {
+          this.#updateMathExpression(this.#inputString.slice(0, -1));
         }
         this.#handleBtnClick(this.#calcButtons.get(digit));
+
       },
     }));
 

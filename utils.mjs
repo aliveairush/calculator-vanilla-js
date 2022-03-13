@@ -15,3 +15,6 @@ export const isANumber = (record) => /\d+\.\d+|\d+/.test(record);
 export const splitOnMathChunks = (string) => string.match(/^-\d+\.\d+|^-\d+|\d+\.\d+|\d+|[()+-/*//]/g);
 
 export const isEmpty = (array) => array.length === 0;
+
+// \D - Not a digit, $ - End of string, ^ - Start of string
+export const isLastNumberZero = (string) => string.match(/\D0$|^0$/gi);
